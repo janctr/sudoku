@@ -1,0 +1,109 @@
+button
+  padding: 0.25rem 0.75rem
+  border-radius: 3px
+  border-width: 1px
+  
+  
+#app
+  display: flex
+  height: 100vh
+  width: 100vw
+  gap: 2rem
+  flex-direction: row
+  justify-content: center
+  align-items: center
+
+  
+
+  header
+    padding: 1rem 2rem
+    text-align: center
+
+    h1
+      font-weight: 200
+    p
+      text-align: left
+
+  .sudoku-game-container
+    border: 1px solid black
+
+    .game-info
+      border: 1px solid red
+
+      .controls
+        padding: 0.5rem 1.25rem
+        display: flex
+        gap: 1rem
+
+    .sudoku-game
+      .sudoku-grid
+        aspect-ratio: 1/1
+        width: 600px
+
+        border-left-width: 3px
+        border-left-color: black
+        border-left-style: solid
+
+        border-bottom-width: 3px
+        border-bottom-color: black
+        border-bottom-style: solid
+
+        display: grid
+        
+        grid-template-columns: repeat(9, 1fr)
+        grid-template-rows: repeat(9, 1fr)
+
+        .cell
+          width: 100%
+
+          border: 1px solid black
+
+          display: flex
+          justify-content: center
+          align-items: center
+
+          transition: all 0.1s ease
+
+          &:hover 
+            cursor: pointer
+            background-color: #F3F3F3
+
+          .cell-value
+            font-size: 1.5rem
+
+        .cell:nth-child(3n)
+          border-right-width: 3px
+          border-right-color: black
+          border-right-style: solid
+
+        .col-boundary
+          border-top-width: 3px
+          border-top-color: black
+          border-top-style: solid
+        .selected-cell
+          background-color: #FFFF33
+
+        .hovered-cell
+          background-color: lighten(#FFFF33, 25%)
+
+
+      .sudoku-controls
+        height: 50px
+        border: 1px solid blue
+        display: flex
+        flex-direction: row
+
+        & > * 
+
+        .sudoku-control
+          flex: 1
+          border: 1px solid black
+          display: flex
+          align-items: center
+          justify-content: center
+
+          &:hover
+            background-color: #F3F3F3
+            cursor: pointer
+
+        .number-control
