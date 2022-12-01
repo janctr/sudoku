@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from "react";
-import { CellValue, GameState, SudokuPuzzle } from "../../types";
-import Cell from "./Cell";
+import { Dispatch, KeyboardEventHandler, SetStateAction, SyntheticEvent } from "react";
+import { Cell, CellValue, GameState, SudokuPuzzle } from "../../types";
+import SudokuCell from "./SudokuCell";
 
 export default function SudokuGame(props: {
   gameState: GameState;
@@ -30,23 +30,36 @@ export default function SudokuGame(props: {
     setHoveredCell
   } = props;
 
-  const cells = sudokuPuzzleState.map((col, i) => {
-    return col.map((row, j) => (
-      <Cell
+  let hoveredCellCol: number, hoveredCellRow: number, hoveredCellValue: number;
+
+  if (hoveredCell) {
+    hoveredCellCol = hoveredCell[0];
+    hoveredCellRow = hoveredCell[1];
+
+    hoveredCellValue = sudokuPuzzleState[hoveredCellCol][hoveredCellRow].value;
+  } else {
+    hoveredCellValue = 0;
+  }
+
+  const cells = sudokuPuzzleState.map((col, colIndex) => {
+    return col.map((cell, rowIndex) => (
+      <SudokuCell
         isTakingNotes={isTakingNotes}
-        coordinate={[i, j]}
-        value={row}
+        coordinate={[colIndex, rowIndex]}
+        cellValue={cell}
         selectCell={selectCell}
         selectedCell={selectedCell}
         clearSelectedCell={clearSelectedCell}
         hoveredCell={hoveredCell}
         setHoveredCell={setHoveredCell}
+        hoveredCellValue={hoveredCellValue}
       />
     ));
   });
 
   const numberControls = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((value, index) => {
     const handleOnClick = () => {
+      console.log('y')
       setSelectedCellValue(value);
     };
     return (
@@ -61,7 +74,7 @@ export default function SudokuGame(props: {
   });
 
   function handleClearCellValue() {
-    setSelectedCellValue('');
+    setSelectedCellValue(0);
   }
 
   const clearControl = <span className="sudoku-control" onClick={handleClearCellValue}>Clear</span>

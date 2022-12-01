@@ -1,9 +1,19 @@
 import GameState from "./GameState";
 
-type SudokuPuzzle = CellValue[][];
-type CellValue = number | "" | CellEditValue;
+type SudokuPuzzle = Cell[][];
+type SudokuPuzzleBasic = number[][];
+
+export interface Cell {
+    value: CellValue;
+    set: boolean; // Determines if cell value is generated
+    notes: CellEditValue
+}
+
+type CellValue = number;
+
 type CellEditValue = number[];
 
 export { GameState };
 
-export type { CellValue, SudokuPuzzle };
+export type { CellValue, SudokuPuzzle, SudokuPuzzleBasic
+ };

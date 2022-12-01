@@ -1,7 +1,77 @@
-import { SudokuPuzzle } from "./types";
+import { SudokuPuzzle, SudokuPuzzleBasic } from "./types";
 
+const puzzleA = [
+  [2, 3, 0, 4, 1, 5, 0, 6, 8],
+  [0, 8, 0, 2, 3, 6, 5, 1, 9],
+  [1, 6, 0, 9, 8, 7, 2, 3, 4],
+  [3, 1, 7, 0, 9, 4, 0, 2, 5],
+  [4, 5, 8, 1, 2, 0, 6, 9, 7],
+  [9, 2, 6, 0, 5, 8, 3, 0, 1],
+  [0, 0, 0, 5, 0, 0, 1, 0, 2],
+  [0, 0, 0, 8, 4, 2, 9, 0, 3],
+  [5, 9, 2, 3, 7, 1, 4, 8, 6],
+];
+
+const puzzleAAnswer = [
+  [2, 3, 9, 4, 1, 5, 7, 6, 8],
+  [7, 8, 4, 2, 3, 6, 5, 1, 9],
+  [1, 6, 5, 9, 8, 7, 2, 3, 4],
+  [3, 1, 7, 6, 9, 4, 8, 2, 5],
+  [4, 5, 8, 1, 2, 3, 6, 9, 7],
+  [9, 2, 6, 7, 5, 8, 3, 4, 1],
+  [8, 4, 3, 5, 6, 9, 1, 7, 2],
+  [6, 7, 1, 8, 4, 2, 9, 5, 3],
+  [5, 9, 2, 3, 7, 1, 4, 8, 6],
+]
+
+export function createSudokuPuzzleTest(): { puzzle: SudokuPuzzle, answer: SudokuPuzzle } {
+  const puzzle = createSudokuPuzzle();
+
+  return { puzzle, answer: convertSudokuPuzzle(puzzleAAnswer)};
+}
+
+function convertSudokuPuzzle(regularPuzzle: number[][]): SudokuPuzzle {
+  const convertedPuzzle = initEmptyGrid();
+
+  for (let col = 0; col < regularPuzzle.length; col++) {
+    for (let row = 0; row < regularPuzzle[col].length; row++) {
+      convertedPuzzle[col][row] =
+      regularPuzzle[col][row] === 0
+          ? {
+              value: 0,
+              set: false,
+              notes: [],
+            }
+          : {
+              value: regularPuzzle[col][row],
+              set: true,
+              notes: [],
+            };
+    }
+  }
+
+  return convertedPuzzle;
+}
 export function createSudokuPuzzle(): SudokuPuzzle {
-  return initRandomGrid();
+  const puzzle = initRandomGrid();
+
+  for (let col = 0; col < puzzleA.length; col++) {
+    for (let row = 0; row < puzzleA[col].length; row++) {
+      puzzle[col][row] =
+        puzzleA[col][row] === 0
+          ? {
+              value: 0,
+              set: false,
+              notes: [],
+            }
+          : {
+              value: puzzleA[col][row],
+              set: true,
+              notes: [],
+            };
+    }
+  }
+  return puzzle;
 }
 
 function initRandomGrid(): SudokuPuzzle {
@@ -9,7 +79,7 @@ function initRandomGrid(): SudokuPuzzle {
 
   for (let col = 0; col < puzzle.length; col++) {
     for (let row = 0; row < puzzle[col].length; row++) {
-      puzzle[row][col] = randomNumber(0, 9);
+      puzzle[row][col] = { value: randomNumber(0, 9), set: false, notes: [] };
     }
   }
 
@@ -21,7 +91,7 @@ function initSequentialGrid(): SudokuPuzzle {
   let num = 1;
   for (let col = 0; col < puzzle.length; col++) {
     for (let row = 0; row < puzzle[col].length; row++) {
-      puzzle[row][col] = num;
+      puzzle[row][col] = { value: num, set: false, notes: [] };
       num++;
     }
   }
@@ -29,7 +99,7 @@ function initSequentialGrid(): SudokuPuzzle {
   return puzzle;
 }
 
-function initEmptyGrid(): SudokuPuzzle {
+export function initEmptyGrid(): SudokuPuzzle {
   const puzzle = new Array(9);
 
   for (let i = 0; i < puzzle.length; i++) {
@@ -38,7 +108,7 @@ function initEmptyGrid(): SudokuPuzzle {
 
   for (let col = 0; col < puzzle.length; col++) {
     for (let row = 0; row < puzzle[col].length; row++) {
-      puzzle[col][row] = "";
+      puzzle[col][row] = 0;
     }
   }
 
@@ -46,6 +116,10 @@ function initEmptyGrid(): SudokuPuzzle {
 }
 
 export function deepCopy(puzzle: SudokuPuzzle): SudokuPuzzle {
+  return JSON.parse(JSON.stringify(puzzle));
+}
+
+export function deepCopyBasic(puzzle: SudokuPuzzleBasic): SudokuPuzzleBasic {
   return JSON.parse(JSON.stringify(puzzle));
 }
 
@@ -68,6 +142,7 @@ function generateSudokuHelper(puzzle: SudokuPuzzle): SudokuPuzzle {
   return puzzle;
 }
 
+/**
 function generateSudokuShitty(): SudokuPuzzle {
   const grid = initEmptyGrid();
 
@@ -110,6 +185,8 @@ function generateSudokuShitty(): SudokuPuzzle {
   return grid;
 }
 
+ */
+
 function generateSudokuBad(): SudokuPuzzle {
   const grid = initEmptyGrid();
 
@@ -139,7 +216,7 @@ function generateSudokuBad(): SudokuPuzzle {
     if (isValidMove(grid, num, currCell)) {
       const [col, row] = currCell;
 
-      grid[col][row] = num;
+      grid[col][row] = { value: num, set: false, notes: [] };
 
       processedCells.push(currCell);
     } else {
@@ -175,7 +252,7 @@ function isValidMove(
   for (let checkRow = 0; checkRow < 9; checkRow++) {
     if (checkRow === row) continue;
 
-    if (puzzle[col][checkRow] === value) {
+    if (puzzle[col][checkRow].value === value) {
       return false;
     }
   }
@@ -184,7 +261,7 @@ function isValidMove(
   for (let checkCol = 0; checkCol < 9; checkCol++) {
     if (checkCol === row) continue;
 
-    if (puzzle[checkCol][row] === value) {
+    if (puzzle[checkCol][row].value === value) {
       return false;
     }
   }
@@ -204,7 +281,7 @@ function isValidMove(
     ) {
       if (col === colTemp && row === rowTemp) continue;
 
-      if (puzzle[colTemp][rowTemp] === value) {
+      if (puzzle[colTemp][rowTemp].value === value) {
         return false;
       }
     }
@@ -268,4 +345,16 @@ function generateValidNumbers(
   return validNumbers;
 }
 
-generateSudoku();
+/** Check if a SudokuPuzzle is valid */
+export function isValidSudoku(puzzle: SudokuPuzzle, answer: SudokuPuzzle): boolean {
+
+  for (let col=0; col<puzzle.length; col++) {
+    for (let row=0; row<puzzle[col].length; row++) {
+      if (puzzle[col][row].value !== answer[col][row].value) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}

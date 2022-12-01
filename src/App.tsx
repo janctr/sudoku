@@ -1,22 +1,38 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useState } from "react";
 import SudokuGame from "./components/SudokuGame/SudokuGame";
-import { createSudokuPuzzle, deepCopy } from "./sudokuController";
-import { CellValue, GameState } from "./types/index";
+import {
+  createSudokuPuzzle,
+  createSudokuPuzzleTest,
+  deepCopy,
+  isValidSudoku,
+  initEmptyGrid,
+} from "./sudokuController";
+import { CellValue, GameState, SudokuPuzzle } from "./types/index";
 
 import "./App.sass";
 
 function App() {
   const [isTakingNotes, setIsTakingNotes] = useState(false);
   const [gameState, setGameState] = useState(GameState.NOT_PLAYING);
-  const [sudokuPuzzleState, setSudokuPuzzleState] = useState(
-    createSudokuPuzzle()
+  const [sudokuPuzzleState, setSudokuPuzzleState] = useState<SudokuPuzzle>(
+    initEmptyGrid()
   );
-  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(null)
-  const [hoveredCell, setHoveredCell] = useState<[number, number] | null>(null)
+  const [sudokuPuzzleAnswer, setSudokuPuzzleAnswer] = useState<SudokuPuzzle>();
+  const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
+    null
+  );
+  const [hoveredCell, setHoveredCell] = useState<[number, number] | null>(null);
+
+  useEffect(() => {
+    const { puzzle, answer } = createSudokuPuzzleTest();
+
+    setSudokuPuzzleState(puzzle);
+    setSudokuPuzzleAnswer(answer);
+  }, []);
 
   function selectCell(col: number, row: number) {
-    setSelectedCell([col, row])
+    setSelectedCell([col, row]);
   }
 
   function clearSelectedCell() {
@@ -26,30 +42,102 @@ function App() {
   function getSelectedCell() {
     if (selectedCell) {
       const [col, row] = selectedCell;
-      return `${col}, ${row}`
+      return `${col}, ${row}`;
     } else {
-      return 'No selection'
+      return "No selection";
     }
   }
 
   function setSelectedCellValue(value: CellValue) {
-    if (selectedCell) {
+    if (selectedCell && gameState === GameState.PLAYING) {
       const [selectedCol, selectedRow] = selectedCell;
 
-      const newPuzzle = deepCopy(sudokuPuzzleState);
+      if (sudokuPuzzleState[selectedCol][selectedRow].set) return;
 
-      newPuzzle[selectedCol][selectedRow] = value;
+      const newPuzzle = deepCopy(sudokuPuzzleState!);
+
+      newPuzzle[selectedCol][selectedRow].value = value;
+
+
+      if (isValidSudoku(newPuzzle, sudokuPuzzleAnswer!)) {
+        console.log("DONE!");
+        setGameState(GameState.COMPLETE);
+      } else {
+        console.log("WRONG");
+      }
+
+      for (const cellRow of newPuzzle) {
+        cellRow.map((cell) => cell.value).join(", ");
+      }
 
       setSudokuPuzzleState(newPuzzle);
     }
   }
 
+  function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    console.log(event.key);
+
+    switch(event.key) {
+      case 'ArrowRight':
+      case 'ArrowLeft':
+      case 'ArrowUp':
+      case 'ArrowDown':
+        handleArrowEvent(event.key);
+        break;
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        handleNumberEvent(event.key);
+        break;
+      default:
+        console.log('Irrelevant key event');
+        break;
+    }
+  }
+
+  function handleArrowEvent(direction: string) {
+    if (!selectedCell) return;
+
+    let [selectedCellCol, selectedCellRow] = selectedCell;
+
+    switch(direction) {
+      case 'ArrowRight':
+        if (selectedCellRow >= 0 && selectedCellRow < 8) selectedCellRow++;
+        break;
+      case 'ArrowLeft':
+        if (selectedCellRow > 0 && selectedCellRow <= 8) selectedCellRow--;
+        break;
+      case 'ArrowUp':
+        if (selectedCellCol > 0 && selectedCellCol <= 8) selectedCellCol--;
+        break;
+      case 'ArrowDown':
+        if (selectedCellCol >= 0 && selectedCellCol < 8) selectedCellCol++;
+        break;
+    }
+
+    setSelectedCell([selectedCellCol, selectedCellRow]);
+  }
+
+  function handleNumberEvent(number: string) {
+    let numberToInt = parseInt(number);
+
+    setSelectedCellValue(numberToInt);
+  }
+
   return (
-    <div id="app">
+    <div id="app" tabIndex={0} onKeyDown={handleOnKeyDown}>
       <header>
         <h1>Sudoku</h1>
-        <p><small>by Jan</small></p>
-        <p>Selected cell: { getSelectedCell() }</p>
+        <p>
+          <small>by Jan</small>
+        </p>
+        <p>Selected cell: {getSelectedCell()}</p>
       </header>
 
       <main>
@@ -118,6 +206,15 @@ function Controls(props: {
         <button onClick={() => setGameState(GameState.PLAYING)}>Unpause</button>
         <button onClick={() => setGameState(GameState.NOT_PLAYING)}>
           Quit
+        </button>
+      </>
+    );
+  } else if (gameState === GameState.COMPLETE) {
+    // TODO
+    return (
+      <>
+        <button onClick={() => setGameState(GameState.PLAYING)}>
+          Start Game
         </button>
       </>
     );
