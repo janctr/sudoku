@@ -8,9 +8,12 @@ import {
   isValidSudoku,
   initEmptyGrid,
 } from "./sudokuController";
-import { CellValue, GameState, SudokuPuzzle } from "./types/index";
+import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 
 import "./App.sass";
+import StartScreen from "./components/StartScreen/StartScreen";
+import GameCompleteScreen from "./components/GameCompleteScreen/GameCompleteScreen";
+import { useTimer } from "./hooks/Timer";
 
 function App() {
   const [isTakingNotes, setIsTakingNotes] = useState(false);
@@ -19,10 +22,14 @@ function App() {
     initEmptyGrid()
   );
   const [sudokuPuzzleAnswer, setSudokuPuzzleAnswer] = useState<SudokuPuzzle>();
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
     null
   );
   const [hoveredCell, setHoveredCell] = useState<[number, number] | null>(null);
+
+  const { secondsElapsed, startTimer, pauseTimer, resumeTimer, clearTimer } =
+    useTimer();
 
   useEffect(() => {
     const { puzzle, answer } = createSudokuPuzzleTest();
@@ -39,7 +46,7 @@ function App() {
     setSelectedCell(null);
   }
 
-  function getSelectedCell() {
+  function getSelectedCellString() {
     if (selectedCell) {
       const [col, row] = selectedCell;
       return `${col}, ${row}`;
@@ -58,7 +65,6 @@ function App() {
 
       newPuzzle[selectedCol][selectedRow].value = value;
 
-
       if (isValidSudoku(newPuzzle, sudokuPuzzleAnswer!)) {
         console.log("DONE!");
         setGameState(GameState.COMPLETE);
@@ -74,29 +80,30 @@ function App() {
     }
   }
 
+  /* Navigation in sudoku grid */
   function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     console.log(event.key);
 
-    switch(event.key) {
-      case 'ArrowRight':
-      case 'ArrowLeft':
-      case 'ArrowUp':
-      case 'ArrowDown':
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "ArrowDown":
         handleArrowEvent(event.key);
         break;
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
         handleNumberEvent(event.key);
         break;
       default:
-        console.log('Irrelevant key event');
+        console.log("Irrelevant key event");
         break;
     }
   }
@@ -106,17 +113,17 @@ function App() {
 
     let [selectedCellCol, selectedCellRow] = selectedCell;
 
-    switch(direction) {
-      case 'ArrowRight':
+    switch (direction) {
+      case "ArrowRight":
         if (selectedCellRow >= 0 && selectedCellRow < 8) selectedCellRow++;
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         if (selectedCellRow > 0 && selectedCellRow <= 8) selectedCellRow--;
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         if (selectedCellCol > 0 && selectedCellCol <= 8) selectedCellCol--;
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         if (selectedCellCol >= 0 && selectedCellCol < 8) selectedCellCol++;
         break;
     }
@@ -130,19 +137,73 @@ function App() {
     setSelectedCellValue(numberToInt);
   }
 
-  return (
-    <div id="app" tabIndex={0} onKeyDown={handleOnKeyDown}>
-      <header>
-        <h1>Sudoku</h1>
-        <p>
-          <small>by Jan</small>
-        </p>
-        <p>Selected cell: {getSelectedCell()}</p>
-      </header>
+  /****************************/
 
-      <main>
-        <div className="sudoku-game-container">
-          <GameInfo gameState={gameState} setGameState={setGameState} />
+  function startGame(difficulty: Difficulty) {
+    if (gameState !== GameState.NOT_PLAYING) {
+      throw new Error("Game state must be NOT_PLAYING to start game.");
+    }
+
+    setGameState(GameState.PLAYING);
+
+    startTimer();
+
+    switch (difficulty) {
+      case Difficulty.EASY: // TODO
+      case Difficulty.MEDIUM: // TODO
+      case Difficulty.HARD: // TODO
+    }
+  }
+
+  function pauseGame() {
+    if (gameState !== GameState.PLAYING) {
+      throw new Error("Game state must be PLAYING to pause game");
+    }
+
+    setGameState(GameState.PAUSED);
+
+    pauseTimer();
+  }
+
+  function resumeGame() {
+    if (gameState !== GameState.PAUSED) {
+      throw new Error("Game state must be PAUSED to resume game");
+    }
+
+    setGameState(GameState.PLAYING);
+
+    resumeTimer();
+  }
+
+  function quitGame() {
+    if (gameState !== GameState.PLAYING) {
+      throw new Error("Game state must be PLAYING to quit game");
+    }
+
+    setGameState(GameState.NOT_PLAYING);
+
+    clearTimer();
+  }
+
+  function dummyFunc() {
+    setGameState(GameState.PLAYING);
+  }
+
+  function ViewController(props: { gameState: GameState }): JSX.Element {
+    const { gameState } = props;
+
+    switch (gameState) {
+      case GameState.NOT_PLAYING:
+        return (
+          <StartScreen
+            onStartEasyGame={() => startGame(Difficulty.EASY)}
+            onStartMediumGame={() => startGame(Difficulty.MEDIUM)}
+            onStartHardGame={() => startGame(Difficulty.HARD)}
+          />
+        );
+      case GameState.PLAYING:
+      case GameState.PAUSED:
+        return (
           <SudokuGame
             gameState={gameState}
             setGameState={setGameState}
@@ -157,6 +218,45 @@ function App() {
             hoveredCell={hoveredCell}
             setHoveredCell={setHoveredCell}
           />
+        );
+      case GameState.COMPLETE:
+        return (
+          <GameCompleteScreen
+            onStartEasyGame={dummyFunc}
+            onStartMediumGame={dummyFunc}
+            onStartHardGame={dummyFunc}
+          />
+        );
+    }
+
+    return (
+      <div className="error-screen">
+        <h1>ERROR</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div id="app" tabIndex={0} onKeyDown={handleOnKeyDown}>
+      <header>
+        <h1>Sudoku</h1>
+        <p>
+          <small>by Jan</small>
+        </p>
+        <p>Selected cell: {getSelectedCellString()}</p>
+      </header>
+
+      <main>
+        <div className="sudoku-game-container">
+          <GameInfo
+            gameState={gameState}
+            setGameState={setGameState}
+            timeElapsed={secondsElapsed}
+            handleQuitGame={quitGame}
+            handlePauseGame={pauseGame}
+            handleResumeGame={resumeGame}
+          />
+          <ViewController gameState={gameState} />
         </div>
       </main>
     </div>
@@ -166,26 +266,60 @@ function App() {
 function GameInfo(props: {
   gameState: GameState;
   setGameState: Dispatch<SetStateAction<GameState>>;
+  timeElapsed: number;
+  handleQuitGame: () => void;
+  handlePauseGame: () => void;
+  handleResumeGame: () => void;
 }) {
+  const { gameState, handleQuitGame, handlePauseGame, handleResumeGame } = props;
+
   return (
     <div className="game-info">
       <div className="controls">
         <Controls
           gameState={props.gameState}
           setGameState={props.setGameState}
+          handleQuitGame={handleQuitGame}
+          handlePauseGame={handlePauseGame}
+          handleResumeGame={handleResumeGame}
         />
+        {
+          (gameState === GameState.PLAYING || gameState === GameState.PAUSED)
+          &&
+          <span>{formatTimeElapsed(props.timeElapsed)}</span>
+        }
       </div>
     </div>
   );
 }
 
+function formatTimeElapsed(timeElapsed: number): string {
+  if (!timeElapsed) return '00:00';
+
+  const seconds = timeElapsed % 60;
+
+  const minutes = Math.floor(timeElapsed/60);
+
+  return `${(minutes === 0) ? '00' : minutes}:${(seconds < 10) ? 0 : ''}${seconds}`
+}
+
 function Controls(props: {
   gameState: GameState;
   setGameState: Dispatch<SetStateAction<GameState>>;
+  handleQuitGame: () => void;
+  handlePauseGame: () => void;
+  handleResumeGame: () => void;
 }) {
-  const { gameState, setGameState } = props;
+  const {
+    gameState,
+    setGameState,
+    handleQuitGame,
+    handlePauseGame,
+    handleResumeGame,
+  } = props;
 
   if (gameState === GameState.NOT_PLAYING) {
+    // TODO: remove this
     return (
       <button onClick={() => setGameState(GameState.PLAYING)}>
         Start Game
@@ -194,19 +328,15 @@ function Controls(props: {
   } else if (gameState === GameState.PLAYING) {
     return (
       <>
-        <button onClick={() => setGameState(GameState.PAUSED)}>Pause</button>
-        <button onClick={() => setGameState(GameState.NOT_PLAYING)}>
-          Quit
-        </button>
+        <button onClick={handlePauseGame}>Pause</button>
+        <button onClick={handleQuitGame}>Quit</button>
       </>
     );
   } else if (gameState === GameState.PAUSED) {
     return (
       <>
-        <button onClick={() => setGameState(GameState.PLAYING)}>Unpause</button>
-        <button onClick={() => setGameState(GameState.NOT_PLAYING)}>
-          Quit
-        </button>
+        <button onClick={handleResumeGame}>Resume</button>
+        <button onClick={handleQuitGame}>Quit</button>
       </>
     );
   } else if (gameState === GameState.COMPLETE) {

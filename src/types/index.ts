@@ -1,3 +1,4 @@
+import Difficulty from "./Difficulty";
 import GameState from "./GameState";
 
 type SudokuPuzzle = Cell[][];
@@ -13,7 +14,7 @@ type CellValue = number;
 
 type CellEditValue = number[];
 
-export { GameState };
+export { GameState, Difficulty };
 
 export type { CellValue, SudokuPuzzle, SudokuPuzzleBasic
  };

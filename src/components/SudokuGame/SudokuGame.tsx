@@ -1,4 +1,4 @@
-import { Dispatch, KeyboardEventHandler, SetStateAction, SyntheticEvent } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Cell, CellValue, GameState, SudokuPuzzle } from "../../types";
 import SudokuCell from "./SudokuCell";
 
@@ -27,7 +27,7 @@ export default function SudokuGame(props: {
     selectedCell,
     setSelectedCellValue,
     hoveredCell,
-    setHoveredCell
+    setHoveredCell,
   } = props;
 
   let hoveredCellCol: number, hoveredCellRow: number, hoveredCellValue: number;
