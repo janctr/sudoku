@@ -5,9 +5,9 @@ export function useTimer() {
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   //const [millisecondsElapsed, setMillisecondsElapsed] = useState(0);
 
-  useEffect(() => {
-    console.log("secondsElapsed: ", secondsElapsed);
-  }, [secondsElapsed]);
+  // useEffect(() => {
+  //   console.log("secondsElapsed: ", secondsElapsed);
+  // }, [secondsElapsed]);
 
   const startTimer = () => {
     console.log("Starting timer.");

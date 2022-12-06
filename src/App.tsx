@@ -22,14 +22,13 @@ function App() {
     initEmptyGrid()
   );
   const [sudokuPuzzleAnswer, setSudokuPuzzleAnswer] = useState<SudokuPuzzle>();
-  const [timeElapsed, setTimeElapsed] = useState(0);
   const [selectedCell, setSelectedCell] = useState<[number, number] | null>(
     null
   );
   const [hoveredCell, setHoveredCell] = useState<[number, number] | null>(null);
 
-  const { secondsElapsed, startTimer, pauseTimer, resumeTimer, clearTimer } =
-    useTimer();
+  // const { secondsElapsed, startTimer, pauseTimer, resumeTimer, clearTimer } =
+  //   useTimer();
 
   useEffect(() => {
     const { puzzle, answer } = createSudokuPuzzleTest();
@@ -146,7 +145,7 @@ function App() {
 
     setGameState(GameState.PLAYING);
 
-    startTimer();
+    //startTimer();
 
     switch (difficulty) {
       case Difficulty.EASY: // TODO
@@ -162,7 +161,7 @@ function App() {
 
     setGameState(GameState.PAUSED);
 
-    pauseTimer();
+    //pauseTimer();
   }
 
   function resumeGame() {
@@ -172,7 +171,7 @@ function App() {
 
     setGameState(GameState.PLAYING);
 
-    resumeTimer();
+    //resumeTimer();
   }
 
   function quitGame() {
@@ -182,7 +181,7 @@ function App() {
 
     setGameState(GameState.NOT_PLAYING);
 
-    clearTimer();
+    //clearTimer();
   }
 
   function dummyFunc() {
@@ -251,7 +250,7 @@ function App() {
           <GameInfo
             gameState={gameState}
             setGameState={setGameState}
-            timeElapsed={secondsElapsed}
+            //timeElapsed={secondsElapsed}
             handleQuitGame={quitGame}
             handlePauseGame={pauseGame}
             handleResumeGame={resumeGame}
@@ -266,12 +265,13 @@ function App() {
 function GameInfo(props: {
   gameState: GameState;
   setGameState: Dispatch<SetStateAction<GameState>>;
-  timeElapsed: number;
+  timeElapsed?: number;
   handleQuitGame: () => void;
   handlePauseGame: () => void;
   handleResumeGame: () => void;
 }) {
-  const { gameState, handleQuitGame, handlePauseGame, handleResumeGame } = props;
+  const { gameState, handleQuitGame, handlePauseGame, handleResumeGame } =
+    props;
 
   return (
     <div className="game-info">
@@ -283,24 +283,23 @@ function GameInfo(props: {
           handlePauseGame={handlePauseGame}
           handleResumeGame={handleResumeGame}
         />
-        {
-          (gameState === GameState.PLAYING || gameState === GameState.PAUSED)
-          &&
+        {(gameState === GameState.PLAYING ||
+          gameState === GameState.PAUSED) && (
           <span>{formatTimeElapsed(props.timeElapsed)}</span>
-        }
+        )}
       </div>
     </div>
   );
 }
 
-function formatTimeElapsed(timeElapsed: number): string {
-  if (!timeElapsed) return '00:00';
+function formatTimeElapsed(timeElapsed: number | null | undefined): string {
+  if (!timeElapsed) return "00:00";
 
   const seconds = timeElapsed % 60;
 
-  const minutes = Math.floor(timeElapsed/60);
+  const minutes = Math.floor(timeElapsed / 60);
 
-  return `${(minutes === 0) ? '00' : minutes}:${(seconds < 10) ? 0 : ''}${seconds}`
+  return `${minutes === 0 ? "00" : minutes}:${seconds < 10 ? 0 : ""}${seconds}`;
 }
 
 function Controls(props: {
