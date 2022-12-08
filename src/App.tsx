@@ -7,6 +7,7 @@ import {
   deepCopy,
   isValidSudoku,
   initEmptyGrid,
+  initUnscrambledSudoku,
 } from "./sudokuController";
 import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 
@@ -31,9 +32,14 @@ function App() {
   //   useTimer();
 
   useEffect(() => {
-    const { puzzle, answer } = createSudokuPuzzleTest();
+    // const { puzzle, answer } = createSudokuPuzzleTest();
 
-    setSudokuPuzzleState(puzzle);
+    // setSudokuPuzzleState(puzzle);
+    // setSudokuPuzzleAnswer(answer);
+    const puzzle = initUnscrambledSudoku();
+    const answer = initUnscrambledSudoku();
+    
+    setSudokuPuzzleState(puzzle)
     setSudokuPuzzleAnswer(answer);
   }, []);
 

@@ -85,6 +85,7 @@ function initRandomGrid(): SudokuPuzzle {
 
   return puzzle;
 }
+
 function initSequentialGrid(): SudokuPuzzle {
   const puzzle = initEmptyGrid();
 
@@ -114,6 +115,31 @@ export function initEmptyGrid(): SudokuPuzzle {
 
   return puzzle;
 }
+
+export function initUnscrambledSudoku(): SudokuPuzzle {
+  const puzzle = initEmptyGrid();
+
+  let curr = 0;
+  let i = 1;
+  for (let col=0; col<puzzle.length; col++) {
+    curr = i;
+    for (let row=0; row<puzzle[col].length; row++) {
+      puzzle[col][row] = {
+        value: curr === 9 ? 9 : (curr % puzzle.length),
+        set: true,
+        notes: []
+      }
+      
+      curr++;
+    }
+
+    i++;
+  }
+
+  return puzzle;
+}
+
+console.dir(initUnscrambledSudoku());
 
 export function deepCopy(puzzle: SudokuPuzzle): SudokuPuzzle {
   return JSON.parse(JSON.stringify(puzzle));
@@ -357,4 +383,33 @@ export function isValidSudoku(puzzle: SudokuPuzzle, answer: SudokuPuzzle): boole
   }
 
   return true;
+}
+
+
+export default class SudokuController {
+  rows: number;
+  cols: number;
+  grid: SudokuPuzzle;
+  
+  constructor(N: number) {
+    this.rows = N;
+    this.cols = N;
+    this.grid = initEmptyGrid();
+  }
+
+  initEmptyGrid(): SudokuPuzzle {
+    const puzzle = new Array(9);
+  
+    for (let i = 0; i < puzzle.length; i++) {
+      puzzle[i] = new Array(9);
+    }
+  
+    for (let col = 0; col < puzzle.length; col++) {
+      for (let row = 0; row < puzzle[col].length; row++) {
+        puzzle[col][row] = 0;
+      }
+    }
+  
+    return puzzle;
+  }
 }
