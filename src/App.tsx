@@ -3,11 +3,9 @@ import { useState } from "react";
 import SudokuGame from "./components/SudokuGame/SudokuGame";
 import {
   createSudokuPuzzle,
-  createSudokuPuzzleTest,
   deepCopy,
   isValidSudoku,
   initEmptyGrid,
-  initUnscrambledSudoku,
 } from "./sudokuController";
 
 
@@ -38,8 +36,10 @@ function App() {
 
     // setSudokuPuzzleState(puzzle);
     // setSudokuPuzzleAnswer(answer);
-    const puzzle = initUnscrambledSudoku();
-    const answer = initUnscrambledSudoku();
+    const { puzzle, answer } = createSudokuPuzzle();
+
+    console.log(puzzle)
+    console.log(answer)
     
     setSudokuPuzzleState(puzzle)
     setSudokuPuzzleAnswer(answer);
