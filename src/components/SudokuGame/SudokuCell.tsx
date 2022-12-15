@@ -44,7 +44,6 @@ export default function SudokuCell(props: {
   /** Event handlers */
 
   function handleOnClick() {
-    console.log("yay im here")
     if (isSelected()) {
       clearSelectedCell();
     } else {

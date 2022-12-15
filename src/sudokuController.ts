@@ -1,4 +1,4 @@
-import { SudokuPuzzle, SudokuPuzzleBasic } from "./types";
+import { Difficulty, SudokuPuzzle, SudokuPuzzleBasic } from "./types";
 import { makepuzzle, solvepuzzle, ratepuzzle } from "sudoku";
 
 function convertSudokuPuzzle(regularPuzzle: number[]): SudokuPuzzle {
@@ -34,18 +34,41 @@ function convertSudokuPuzzle(regularPuzzle: number[]): SudokuPuzzle {
   return convertedPuzzle;
 }
 
-export function createSudokuPuzzle(): {
+const increment = (n: number) => (n !== null ? n + 1 : 0);
+
+export function createSudokuPuzzle(difficulty = Difficulty.EASY): Promise<{
   puzzle: SudokuPuzzle;
   answer: SudokuPuzzle;
-} {
-  const rawPuzzle = makepuzzle();
+}> {
+  let rawPuzzle = makepuzzle();
 
-  const puzzle = convertSudokuPuzzle(rawPuzzle);
-  const answer = convertSudokuPuzzle(solvepuzzle(rawPuzzle));
+  while (getPuzzleDifficulty(rawPuzzle) !== difficulty) {
+    rawPuzzle = makepuzzle();
+  }
 
-  console.dir(puzzle);
+  const puzzle = convertSudokuPuzzle(rawPuzzle.map(increment));
+  const answer = convertSudokuPuzzle(solvepuzzle(rawPuzzle).map(increment));
 
-  return { puzzle, answer };
+  console.dir("puzzle", puzzle);
+  console.dir("answer", answer);
+
+  return new Promise((resolve) => {
+    resolve({ puzzle, answer });
+  });
+  // return { puzzle, answer };
+}
+
+function getPuzzleDifficulty(puzzle: number[]): Difficulty {
+  const samples = 250;
+  const rating = ratepuzzle(puzzle, samples);
+
+  if (rating >= 0 && rating <= 1) {
+    return Difficulty.EASY;
+  } else if (rating >= 1 && rating <= 2) {
+    return Difficulty.MEDIUM;
+  } else {
+    return Difficulty.HARD;
+  }
 }
 
 export function deepCopy(puzzle: SudokuPuzzle): SudokuPuzzle {
@@ -117,3 +140,35 @@ export function initEmptyGrid(): SudokuPuzzle {
 
   return puzzle;
 }
+
+function testSudokuPackage() {
+  let totalRating = 0;
+  let totalClues = 0;
+  const numSudokus = 10;
+  const samples = 10;
+
+  for (let i = 0; i < numSudokus; i++) {
+    const puzzle = makepuzzle();
+    let a = 0;
+
+    for (let j = 0; j < samples; j++) {
+      const rating = ratepuzzle(puzzle, 10);
+      a += rating;
+    }
+
+    console.log("avg", a / samples);
+    totalRating += a / samples;
+    totalClues += countClues(puzzle);
+  }
+
+  console.log("total avg rating: ", totalRating / numSudokus);
+  console.log("total avg clues: ", totalClues / numSudokus);
+}
+
+function countClues(puzzle: number[]) {
+  return puzzle.filter((x) => {
+    return x !== null;
+  }).length;
+}
+
+// testSudokuPackage();

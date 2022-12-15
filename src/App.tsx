@@ -8,7 +8,6 @@ import {
   initEmptyGrid,
 } from "./sudokuController";
 
-
 import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 
 import "./App.sass";
@@ -32,17 +31,10 @@ function App() {
   //   useTimer();
 
   useEffect(() => {
-    // const { puzzle, answer } = createSudokuPuzzleTest();
-
-    // setSudokuPuzzleState(puzzle);
-    // setSudokuPuzzleAnswer(answer);
-    const { puzzle, answer } = createSudokuPuzzle();
-
-    console.log(puzzle)
-    console.log(answer)
-    
-    setSudokuPuzzleState(puzzle)
-    setSudokuPuzzleAnswer(answer);
+    createSudokuPuzzle().then(({ puzzle, answer }) => {
+      setSudokuPuzzleState(puzzle);
+      setSudokuPuzzleAnswer(answer);
+    });
   }, []);
 
   function selectCell(col: number, row: number) {
@@ -72,6 +64,7 @@ function App() {
 
       newPuzzle[selectedCol][selectedRow].value = value;
 
+      // TODO: Only call this if the board has 0 cells to fill
       if (isValidSudoku(newPuzzle, sudokuPuzzleAnswer!)) {
         console.log("DONE!");
         setGameState(GameState.COMPLETE);
@@ -154,20 +147,20 @@ function App() {
 
   /****************************/
 
-  function startGame(difficulty: Difficulty) {
+  async function startGame(difficulty: Difficulty) {
     if (gameState !== GameState.NOT_PLAYING) {
       throw new Error("Game state must be NOT_PLAYING to start game.");
     }
 
-    setGameState(GameState.PLAYING);
+    console.log('Initializing game with ' + difficulty + ' difficulty');
+    
+    const { puzzle, answer } = await createSudokuPuzzle(difficulty);
+
+    setSudokuPuzzleState(puzzle);
+    setSudokuPuzzleAnswer(answer);
 
     //startTimer();
-
-    switch (difficulty) {
-      case Difficulty.EASY: // TODO
-      case Difficulty.MEDIUM: // TODO
-      case Difficulty.HARD: // TODO
-    }
+    setGameState(GameState.PLAYING);
   }
 
   function pauseGame() {
