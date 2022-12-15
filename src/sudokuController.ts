@@ -25,7 +25,6 @@ const puzzleAAnswer = [
   [5, 9, 2, 3, 7, 1, 4, 8, 6],
 ];
 
-
 function convertSudokuPuzzle(regularPuzzle: number[]): SudokuPuzzle {
   const convertedPuzzle = initEmptyGrid();
 
@@ -39,7 +38,8 @@ function convertSudokuPuzzle(regularPuzzle: number[]): SudokuPuzzle {
   for (let col = 0; col < convertedPuzzle.length; col++) {
     for (let row = 0; row < convertedPuzzle[col].length; row++) {
       convertedPuzzle[col][row] =
-        (regularPuzzle[regularPuzzleIndex] === 0) || (regularPuzzle[regularPuzzleIndex] === null)
+        regularPuzzle[regularPuzzleIndex] === 0 ||
+        regularPuzzle[regularPuzzleIndex] === null
           ? {
               value: 0,
               set: false,
@@ -58,17 +58,19 @@ function convertSudokuPuzzle(regularPuzzle: number[]): SudokuPuzzle {
   return convertedPuzzle;
 }
 
-export function createSudokuPuzzle(): { puzzle: SudokuPuzzle, answer: SudokuPuzzle } {
+export function createSudokuPuzzle(): {
+  puzzle: SudokuPuzzle;
+  answer: SudokuPuzzle;
+} {
   const rawPuzzle = makepuzzle();
+
   const puzzle = convertSudokuPuzzle(rawPuzzle);
-  const answer = solvepuzzle(rawPuzzle);
+  const answer = convertSudokuPuzzle(solvepuzzle(rawPuzzle));
 
   console.dir(puzzle);
 
-  return {puzzle, answer};
+  return { puzzle, answer };
 }
-
-createSudokuPuzzle();
 
 export function deepCopy(puzzle: SudokuPuzzle): SudokuPuzzle {
   return JSON.parse(JSON.stringify(puzzle));
@@ -111,6 +113,8 @@ export function isValidSudoku(
   puzzle: SudokuPuzzle,
   answer: SudokuPuzzle
 ): boolean {
+  // TODO: Reimplement to hold a value that is equivalent to how many missing there are
+  // Once that value is 0, only then should this function be called
   for (let col = 0; col < puzzle.length; col++) {
     for (let row = 0; row < puzzle[col].length; row++) {
       if (puzzle[col][row].value !== answer[col][row].value) {

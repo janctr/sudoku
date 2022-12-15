@@ -54,7 +54,7 @@ function App() {
   }
 
   function getSelectedCellString() {
-    if (selectedCell) {
+    if (selectedCell !== null) {
       const [col, row] = selectedCell;
       return `${col}, ${row}`;
     } else {
@@ -91,6 +91,8 @@ function App() {
   function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     console.log(event.key);
 
+    // TODO: Make Alt + `direction` jump 2 spaces
+
     switch (event.key) {
       case "ArrowRight":
       case "ArrowLeft":
@@ -108,6 +110,12 @@ function App() {
       case "8":
       case "9":
         handleNumberEvent(event.key);
+        break;
+      case "Backspace":
+        setSelectedCellValue(0);
+        break;
+      case "Escape":
+        clearSelectedCell();
         break;
       default:
         console.log("Irrelevant key event");

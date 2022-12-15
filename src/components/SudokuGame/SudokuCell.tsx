@@ -149,8 +149,8 @@ export default function SudokuCell(props: {
     <span
       className={cellClassName}
       onClick={handleOnClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      // onMouseEnter={handleMouseEnter}
+      // onMouseLeave={handleMouseLeave}
     >
       <CellValueComponent />
     </span>
