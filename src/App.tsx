@@ -152,8 +152,8 @@ function App() {
       throw new Error("Game state must be NOT_PLAYING to start game.");
     }
 
-    console.log('Initializing game with ' + difficulty + ' difficulty');
-    
+    console.log("Initializing game with " + difficulty + " difficulty");
+
     const { puzzle, answer } = await createSudokuPuzzle(difficulty);
 
     setSudokuPuzzleState(puzzle);
@@ -246,13 +246,12 @@ function App() {
 
   return (
     <div id="app" tabIndex={0} onKeyDown={handleOnKeyDown}>
-      <header>
+      {/* <header>
         <h1>Sudoku</h1>
         <p>
           <small>by Jan</small>
         </p>
-        <p>Selected cell: {getSelectedCellString()}</p>
-      </header>
+      </header> */}
 
       <main>
         <div className="sudoku-game-container">
@@ -294,7 +293,7 @@ function GameInfo(props: {
         />
         {(gameState === GameState.PLAYING ||
           gameState === GameState.PAUSED) && (
-          <span>{formatTimeElapsed(props.timeElapsed)}</span>
+          <span className="time-elapsed">{formatTimeElapsed(props.timeElapsed)}</span>
         )}
       </div>
     </div>
@@ -327,12 +326,7 @@ function Controls(props: {
   } = props;
 
   if (gameState === GameState.NOT_PLAYING) {
-    // TODO: remove this
-    return (
-      <button onClick={() => setGameState(GameState.PLAYING)}>
-        Start Game
-      </button>
-    );
+    return <></>;
   } else if (gameState === GameState.PLAYING) {
     return (
       <>
@@ -348,14 +342,7 @@ function Controls(props: {
       </>
     );
   } else if (gameState === GameState.COMPLETE) {
-    // TODO
-    return (
-      <>
-        <button onClick={() => setGameState(GameState.PLAYING)}>
-          Start Game
-        </button>
-      </>
-    );
+    return <></>;
   } else {
     console.error("Error!!!!");
     return <div>ERROR WITH CONTROL BUTTON</div>;

@@ -1,6 +1,8 @@
 *
   font-weight: 200
-  
+
+$sudoku-grid-size: 600px
+
 button
   $button-color: steelblue
   padding: 0.25rem 0.75rem
@@ -16,6 +18,10 @@ button
     cursor: pointer
     background-color: lighten($button-color, 10%)
 
+main
+  width: 100%
+  max-width: 600px
+
 #app
   display: flex
   height: 100vh
@@ -23,7 +29,10 @@ button
   gap: 2rem
   flex-direction: row
   justify-content: center
-  align-items: center  
+  align-items: center
+
+  @media (max-width: $sudoku-grid-size)
+    flex-direction: column
 
   header
     padding: 1rem 2rem
@@ -36,18 +45,24 @@ button
 
   .sudoku-game-container
     border: 1px solid black
+    border-radius: 7px
 
     .game-info
-      border: 1px solid red
 
       .controls
+        min-height: 25px
         padding: 0.5rem 1.25rem
         display: flex
         gap: 1rem
 
+        .time-elapsed
+          flex: 1
+          text-align: right
+
     .start-screen, .complete-screen
       aspect-ratio: 1/1
-      width: 600px
+      // max-width: 600px
+      // width: 100%
       display: flex
       flex-direction: column
       justify-content: center
@@ -62,7 +77,8 @@ button
     .sudoku-game
       .sudoku-grid
         aspect-ratio: 1/1
-        width: 600px
+        // width: 600px
+        min-width: 350px
 
         border-left-width: 3px
         border-left-color: black
@@ -73,12 +89,12 @@ button
         border-bottom-style: solid
 
         display: grid
-        
+
         grid-template-columns: repeat(9, 1fr)
         grid-template-rows: repeat(9, 1fr)
 
         .cell
-          width: 100%
+          aspect-ratio: 1/1
 
           border: 1px solid black
 
@@ -88,12 +104,13 @@ button
 
           transition: all 0.1s ease
 
-          &:hover 
+          &:hover
             cursor: pointer
             background-color: #F3F3F3
 
           .cell-value
             font-size: 1.5rem
+            color: blue
 
         .cell:nth-child(3n)
           border-right-width: 3px
@@ -108,31 +125,35 @@ button
         .selected-cell
           background-color: #FFFF33 !important
 
+        .like-number-cell
+          background: steelblue
+          color: white
+
         .hovered-cell
           background-color: lighten(#FFFF33, 25%)
 
         .set-cell
-          color: blue
+          .cell-value
+            color: #000
+            font-weight: 500
 
         .matching-number
           background: steelblue
           color: white
 
-
       .sudoku-controls
         height: 50px
-        border: 1px solid blue
         display: flex
         flex-direction: row
 
-        & > * 
+        & > *
 
         .sudoku-control
           flex: 1
-          border: 1px solid black
           display: flex
           align-items: center
           justify-content: center
+          margin: 0.5rem
 
           &:hover
             background-color: #F3F3F3

@@ -7,6 +7,7 @@ export default function SudokuCell(props: {
   cellValue: Cell;
   selectCell: (col: number, row: number) => void;
   selectedCell: [number, number] | null;
+  selectedCellValue: number;
   clearSelectedCell: () => void;
   hoveredCell: [number, number] | null;
   setHoveredCell: Dispatch<SetStateAction<[number, number] | null>>;
@@ -18,6 +19,7 @@ export default function SudokuCell(props: {
     cellValue,
     selectCell,
     selectedCell,
+    selectedCellValue,
     clearSelectedCell,
     hoveredCell,
     setHoveredCell,
@@ -104,11 +106,18 @@ export default function SudokuCell(props: {
     return false;
   }
 
+  function isLikeNumber(): boolean {
+    return (selectedCellValue !== 0 && cellValue.value === selectedCellValue)
+  }
   function getClassName() {
     let classNames = ["cell"];
 
     if (isSelected()) {
       classNames.push("selected-cell");
+    }
+
+    if (isLikeNumber()) {
+      classNames.push('like-number-cell')
     }
 
     if (isHovered()) {

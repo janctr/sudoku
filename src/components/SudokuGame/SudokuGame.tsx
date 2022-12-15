@@ -30,6 +30,16 @@ export default function SudokuGame(props: {
     setHoveredCell,
   } = props;
 
+  let selectedCellCol: number, selectedCellRow: number, selectedCellValue: number;
+
+  if (selectedCell !== null) {
+    selectedCellCol = selectedCell[0];
+    selectedCellRow = selectedCell[1];
+    selectedCellValue = sudokuPuzzleState[selectedCellCol][selectedCellRow].value;
+  } else {
+    selectedCellValue = 0;
+  }
+
   let hoveredCellCol: number, hoveredCellRow: number, hoveredCellValue: number;
 
   if (hoveredCell) {
@@ -49,6 +59,7 @@ export default function SudokuGame(props: {
         cellValue={cell}
         selectCell={selectCell}
         selectedCell={selectedCell}
+        selectedCellValue={selectedCellValue}
         clearSelectedCell={clearSelectedCell}
         hoveredCell={hoveredCell}
         setHoveredCell={setHoveredCell}
