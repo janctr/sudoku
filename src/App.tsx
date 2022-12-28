@@ -13,7 +13,7 @@ import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 import "./App.sass";
 import StartScreen from "./components/StartScreen/StartScreen";
 import GameCompleteScreen from "./components/GameCompleteScreen/GameCompleteScreen";
-// import { useTimer } from "./hooks/Timer";
+import { useTimer } from "./hooks/Timer";
 
 function App() {
   const [isTakingNotes, setIsTakingNotes] = useState(false);
@@ -27,8 +27,8 @@ function App() {
   );
   const [hoveredCell, setHoveredCell] = useState<[number, number] | null>(null);
 
-  // const { secondsElapsed, startTimer, pauseTimer, resumeTimer, clearTimer } =
-  //   useTimer();
+  const { secondsElapsed, startTimer, pauseTimer, resumeTimer, clearTimer } =
+    useTimer();
 
   useEffect(() => {
     createSudokuPuzzle().then(({ puzzle, answer }) => {
@@ -131,7 +131,7 @@ function App() {
   }
 
   function handleNumberEvent(number: string) {
-    let numberToInt = parseInt(number);
+    const numberToInt = parseInt(number);
 
     setSelectedCellValue(numberToInt);
   }
@@ -150,7 +150,7 @@ function App() {
     setSudokuPuzzleState(puzzle);
     setSudokuPuzzleAnswer(answer);
 
-    //startTimer();
+    startTimer();
     setGameState(GameState.PLAYING);
   }
 
@@ -161,7 +161,7 @@ function App() {
 
     setGameState(GameState.PAUSED);
 
-    //pauseTimer();
+    pauseTimer();
   }
 
   function resumeGame() {
@@ -171,17 +171,18 @@ function App() {
 
     setGameState(GameState.PLAYING);
 
-    //resumeTimer();
+    resumeTimer();
   }
 
   function quitGame() {
-    if (gameState !== GameState.PLAYING) {
-      throw new Error("Game state must be PLAYING to quit game");
+
+    if (!(gameState === GameState.PLAYING || gameState === GameState.PAUSED)) {
+      throw new Error("Game state must be PLAYING or PAUSED to quit game");
     }
 
     setGameState(GameState.NOT_PLAYING);
 
-    //clearTimer();
+    clearTimer();
   }
 
   function ViewController(props: { gameState: GameState }): JSX.Element {
@@ -217,13 +218,12 @@ function App() {
       case GameState.COMPLETE:
         return (
           <GameCompleteScreen
-          onStartEasyGame={() => startGame(Difficulty.EASY)}
-          onStartMediumGame={() => startGame(Difficulty.MEDIUM)}
-          onStartHardGame={() => startGame(Difficulty.HARD)}
+            onStartEasyGame={() => startGame(Difficulty.EASY)}
+            onStartMediumGame={() => startGame(Difficulty.MEDIUM)}
+            onStartHardGame={() => startGame(Difficulty.HARD)}
           />
         );
     }
-
   }
 
   return (
@@ -240,7 +240,7 @@ function App() {
           <GameInfo
             gameState={gameState}
             setGameState={setGameState}
-            //timeElapsed={secondsElapsed}
+            timeElapsed={secondsElapsed}
             handleQuitGame={quitGame}
             handlePauseGame={pauseGame}
             handleResumeGame={resumeGame}
@@ -275,7 +275,9 @@ function GameInfo(props: {
         />
         {(gameState === GameState.PLAYING ||
           gameState === GameState.PAUSED) && (
-          <span className="time-elapsed">{formatTimeElapsed(props.timeElapsed)}</span>
+          <span className="time-elapsed">
+            {formatTimeElapsed(props.timeElapsed)}
+          </span>
         )}
       </div>
     </div>
@@ -299,12 +301,8 @@ function Controls(props: {
   handlePauseGame: () => void;
   handleResumeGame: () => void;
 }) {
-  const {
-    gameState,
-    handleQuitGame,
-    handlePauseGame,
-    handleResumeGame,
-  } = props;
+  const { gameState, handleQuitGame, handlePauseGame, handleResumeGame } =
+    props;
 
   if (gameState === GameState.NOT_PLAYING) {
     return <></>;
