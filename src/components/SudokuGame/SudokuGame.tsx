@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Cell, CellValue, GameState, SudokuPuzzle } from "../../types";
+import { CellValue, GameState, SudokuPuzzle } from "../../types";
 import SudokuCell from "./SudokuCell";
 
 export default function SudokuGame(props: {
@@ -17,10 +17,10 @@ export default function SudokuGame(props: {
   setHoveredCell: Dispatch<SetStateAction<[number, number] | null>>
 }) {
   const {
-    gameState,
-    setGameState,
+    // gameState,
+    // setGameState,
     sudokuPuzzleState,
-    setSudokuPuzzleState,
+    // setSudokuPuzzleState,
     isTakingNotes,
     selectCell,
     clearSelectedCell,
@@ -72,7 +72,7 @@ export default function SudokuGame(props: {
     const handleOnClick = () => {
       setSelectedCellValue(value);
     };
-    
+
     return (
       <span
         key={`number-control-${index}`}
