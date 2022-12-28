@@ -233,11 +233,6 @@ function App() {
         );
     }
 
-    return (
-      <div className="error-screen">
-        <h1>ERROR</h1>
-      </div>
-    );
   }
 
   return (
