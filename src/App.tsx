@@ -193,10 +193,6 @@ function App() {
     //clearTimer();
   }
 
-  function dummyFunc() {
-    setGameState(GameState.PLAYING);
-  }
-
   function ViewController(props: { gameState: GameState }): JSX.Element {
     const { gameState } = props;
 
@@ -230,9 +226,9 @@ function App() {
       case GameState.COMPLETE:
         return (
           <GameCompleteScreen
-            onStartEasyGame={dummyFunc}
-            onStartMediumGame={dummyFunc}
-            onStartHardGame={dummyFunc}
+          onStartEasyGame={() => startGame(Difficulty.EASY)}
+          onStartMediumGame={() => startGame(Difficulty.MEDIUM)}
+          onStartHardGame={() => startGame(Difficulty.HARD)}
           />
         );
     }
