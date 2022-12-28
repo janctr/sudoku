@@ -1,19 +1,29 @@
 import React, { Dispatch, SetStateAction, useEffect } from "react";
 import { useState } from "react";
+
+/** Components */
 import SudokuGame from "./components/SudokuGame/SudokuGame";
+import SudokuControls from "./components/SudokuGame/SudokuControls";
+import StartScreen from "./components/StartScreen/StartScreen";
+import GameCompleteScreen from "./components/GameCompleteScreen/GameCompleteScreen";
+
+/** Hooks */
+import { useTimer } from "./hooks/Timer";
+
+/** Util */
 import {
   createSudokuPuzzle,
   deepCopy,
   isValidSudoku,
   initEmptyGrid,
 } from "./sudokuController";
+import { formatTimeElapsed } from "./util";
 
+/** Types/Enums */
 import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 
+/** Stylesheets */
 import "./App.sass";
-import StartScreen from "./components/StartScreen/StartScreen";
-import GameCompleteScreen from "./components/GameCompleteScreen/GameCompleteScreen";
-import { useTimer } from "./hooks/Timer";
 
 function App() {
   const [isTakingNotes, setIsTakingNotes] = useState(false);
@@ -175,7 +185,6 @@ function App() {
   }
 
   function quitGame() {
-
     if (!(gameState === GameState.PLAYING || gameState === GameState.PAUSED)) {
       throw new Error("Game state must be PLAYING or PAUSED to quit game");
     }
@@ -266,7 +275,7 @@ function GameInfo(props: {
   return (
     <div className="game-info">
       <div className="controls">
-        <Controls
+        <SudokuControls
           gameState={props.gameState}
           setGameState={props.setGameState}
           handleQuitGame={handleQuitGame}
@@ -282,50 +291,6 @@ function GameInfo(props: {
       </div>
     </div>
   );
-}
-
-function formatTimeElapsed(timeElapsed: number | null | undefined): string {
-  if (!timeElapsed) return "00:00";
-
-  const seconds = timeElapsed % 60;
-
-  const minutes = Math.floor(timeElapsed / 60);
-
-  return `${minutes === 0 ? "00" : minutes}:${seconds < 10 ? 0 : ""}${seconds}`;
-}
-
-function Controls(props: {
-  gameState: GameState;
-  setGameState: Dispatch<SetStateAction<GameState>>;
-  handleQuitGame: () => void;
-  handlePauseGame: () => void;
-  handleResumeGame: () => void;
-}) {
-  const { gameState, handleQuitGame, handlePauseGame, handleResumeGame } =
-    props;
-
-  if (gameState === GameState.NOT_PLAYING) {
-    return <></>;
-  } else if (gameState === GameState.PLAYING) {
-    return (
-      <>
-        <button onClick={handlePauseGame}>Pause</button>
-        <button onClick={handleQuitGame}>Quit</button>
-      </>
-    );
-  } else if (gameState === GameState.PAUSED) {
-    return (
-      <>
-        <button onClick={handleResumeGame}>Resume</button>
-        <button onClick={handleQuitGame}>Quit</button>
-      </>
-    );
-  } else if (gameState === GameState.COMPLETE) {
-    return <></>;
-  } else {
-    console.error("Error!!!!");
-    return <div>ERROR WITH CONTROL BUTTON</div>;
-  }
 }
 
 export default App;

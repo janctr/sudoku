@@ -70,9 +70,9 @@ export default function SudokuGame(props: {
 
   const numberControls = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((value, index) => {
     const handleOnClick = () => {
-      console.log('y')
       setSelectedCellValue(value);
     };
+    
     return (
       <span
         key={`number-control-${index}`}
