@@ -13,7 +13,7 @@ import { CellValue, Difficulty, GameState, SudokuPuzzle } from "./types/index";
 import "./App.sass";
 import StartScreen from "./components/StartScreen/StartScreen";
 import GameCompleteScreen from "./components/GameCompleteScreen/GameCompleteScreen";
-import { useTimer } from "./hooks/Timer";
+// import { useTimer } from "./hooks/Timer";
 
 function App() {
   const [isTakingNotes, setIsTakingNotes] = useState(false);
@@ -43,15 +43,6 @@ function App() {
 
   function clearSelectedCell() {
     setSelectedCell(null);
-  }
-
-  function getSelectedCellString() {
-    if (selectedCell !== null) {
-      const [col, row] = selectedCell;
-      return `${col}, ${row}`;
-    } else {
-      return "No selection";
-    }
   }
 
   function setSelectedCellValue(value: CellValue) {
@@ -310,7 +301,6 @@ function Controls(props: {
 }) {
   const {
     gameState,
-    setGameState,
     handleQuitGame,
     handlePauseGame,
     handleResumeGame,
